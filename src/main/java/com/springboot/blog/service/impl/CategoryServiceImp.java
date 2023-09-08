@@ -1,9 +1,11 @@
 package com.springboot.blog.service.impl;
 
 import com.springboot.blog.entity.CategoryE;
+import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.payload.CategoryDto;
 import com.springboot.blog.repository.CategoryRepo;
+import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CategoryService;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +15,11 @@ import java.util.stream.Collectors;
 @Service
 public class CategoryServiceImp implements CategoryService {
    private CategoryRepo categoryRepo;
+   private PostRepository postRepository;
 
-    public CategoryServiceImp(CategoryRepo categoryRepo) {
+    public CategoryServiceImp(CategoryRepo categoryRepo, PostRepository postRepository) {
         this.categoryRepo = categoryRepo;
+        this.postRepository = postRepository;
     }
 
     @Override
@@ -34,7 +38,12 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryDto findByIdCategory(long id) {
         CategoryE category = categoryRepo.findById(id).orElseThrow(()->new ResourceNotFoundException("Category","Id",String.valueOf(id)));
-        return mapToDto(category);
+        List<Post> posts = postRepository.findByCategoryId(category.getId());
+        System.out.println("Posts: "+posts);
+//        category.setPosts(posts);
+        CategoryDto categoryDto = mapToDto(category);
+        categoryDto.setPosts(posts);
+        return categoryDto;
     }
 
     @Override
@@ -58,6 +67,7 @@ public class CategoryServiceImp implements CategoryService {
         categoryDto.setId(categoryE.getId());
         categoryDto.setName(categoryE.getName());
         categoryDto.setDescription(categoryE.getDescription());
+//        categoryDto.setPosts((List<Post>) categoryE.getPosts());
         return categoryDto;
     }
     private CategoryE mapToEntity(CategoryDto categoryDto){

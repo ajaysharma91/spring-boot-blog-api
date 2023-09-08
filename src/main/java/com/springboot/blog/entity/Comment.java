@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +26,10 @@ public class Comment {
     @JoinColumn(name="post_id",nullable = false)
     private Post post;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id",nullable = true)
+    private Comment parent;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Comment> reply;
 }

@@ -31,7 +31,9 @@ public class CommentServiceImpl implements CommentService {
     Comment comment = mapToEntity(commentDto);
     Post post  = postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post","Id",String.valueOf(postId)));
                  comment.setPost(post);
-    Comment newComment = commentRepository.save(comment);
+        Comment pcomment = commentRepository.findById(commentDto.getParent_id()).orElseThrow(()->new ResourceNotFoundException("Comment","Id",String.valueOf(commentDto.getParent_id())));
+        comment.setParent(pcomment);
+        Comment newComment = commentRepository.save(comment);
     return mapToDto(newComment);
     }
 
@@ -49,7 +51,18 @@ public class CommentServiceImpl implements CommentService {
         if (!Objects.equals(comment.getPost().getId(), post.getId())) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST,"Comments does not belongs to post");
         }
-            return mapToDto(comment);
+        List<Comment> comments = commentRepository.findByParentId(id);
+//        if(comments.size()>0){
+//            for(Comment com:comments){
+//                List<Comment> comment1 = commentRepository.findByParentId(com.getId());
+//                if(comment1 != null){
+//                    com.setReply(comment1);
+//                }
+//            }
+//        }
+        CommentDto commentDto = mapToDto(comment);
+        commentDto.setReply(comments.stream().map(reply->mapToDto(reply)).collect(Collectors.toList()));
+            return commentDto;
     }
 
     @Override

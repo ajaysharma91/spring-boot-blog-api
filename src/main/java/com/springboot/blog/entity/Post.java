@@ -1,8 +1,6 @@
 package com.springboot.blog.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -11,8 +9,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "posts",uniqueConstraints = {@UniqueConstraint(columnNames ={"title"})})
@@ -28,7 +27,7 @@ public class Post {
     private String content;
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id",referencedColumnName = "id", nullable = false)
     @NotNull
     private CategoryE category;
