@@ -63,6 +63,7 @@ public class CommentServiceImpl implements CommentService {
 
                 if (dto1 != null) {
                     comD.setParent(dto1);
+                    list.remove(dto1);
                 } else {
                     comD.setParent(mapToDto(comments.get(i)));
                 }
@@ -71,7 +72,16 @@ public class CommentServiceImpl implements CommentService {
 //                comD.setParent(child);
                 list.add(comD);
             } else {
-                list.add(mapToDto(comments.get(i)));
+                CommentDto dto1 = null;
+
+                for (CommentDto dto:list){
+                    if(dto.getId() == comments.get(i).getId()){
+                        dto1 = dto;
+                    }
+                }
+                if(dto1 == null){
+                    list.add(mapToDto(comments.get(i)));
+                }
             }
         }
         System.out.println("Comments: " + list);
