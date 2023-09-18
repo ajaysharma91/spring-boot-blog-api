@@ -42,10 +42,6 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDto> getAllComments(long postId) {
 //        List<CommentDto> comments = commentRepository.findByPostId(postId).stream().map((comment1)->mapToDto(comment1)).collect(Collectors.toList());
         List<Comment> comments = commentRepository.findByPostId(postId);
-        List<Comment> tempComments = new ArrayList<>();
-        for (int i=0;i<comments.size();i++){
-
-        }
         List<CommentDto> list = new ArrayList<>();
         for (int i=0;i<comments.size();i++){
             list.add(new CommentDto());
@@ -53,15 +49,14 @@ public class CommentServiceImpl implements CommentService {
         for (int i = comments.size() - 1; i >= 0; i--) {
             if (comments.get(i).getParent() != null) {
                 final long id = comments.get(i).getId();
-                Comment com = getCommentId(postId, comments.get(i).getParent().getId());
+                Comment com = comments.get(comments.indexOf(comments.get(i).getParent()));
+//                Comment com = getCommentId(postId, comments.get(i).getParent().getId());
                 CommentDto dto1 = null;
                 for (CommentDto dto:list){
                     if(dto.getId() == id){
                         dto1 = dto;
                     }
                 }
-                System.out.println("COM2 "+dto1);
-                System.out.println("LIST "+list.toString());
                 CommentDto comD = mapToDto(com);
                 if (dto1 != null) {
                     comD.setParent(dto1);
@@ -69,19 +64,8 @@ public class CommentServiceImpl implements CommentService {
                 } else {
                     comD.setParent(mapToDto(comments.get(i)));
                 }
-//                comments.re(comments.get(i));
-//                CommentDto child = mapToDto(comments.get(i));
-//                comD.setParent(child);
                 int index = comments.indexOf(comments.get(i).getParent());
                 list.set(index,comD);
-
-//                 different approch
-//                com.setParent(comments.get(i));
-//                Comment com1 = tempComments.get(tempComments.indexOf(tempComments.get(i).getParent()));
-//                com1.setParent(comments.get(i));
-//                System.out.println(comments.indexOf(com1));
-//                comments.set(tempComments.indexOf(tempComments.get(i).getParent()),com1);
-//                System.out.println(comments.indexOf(com1));
             } else {
                 CommentDto dto1 = null;
                 for (CommentDto dto:list){
